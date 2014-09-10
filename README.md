@@ -1,4 +1,4 @@
-jfinal-slf4j
+jfinal-mailer
 ============
 
-jfinal  slf4j  log api
+jfinal  mailer  plugin
