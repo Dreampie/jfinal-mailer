@@ -1,6 +1,6 @@
 package cn.dreampie.mail;
 
-import cn.dreampie.PropertiesUtils;
+import cn.dreampie.PropertiesKit;
 import com.jfinal.plugin.IPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,7 +42,7 @@ public class MailerPlugin implements IPlugin {
 
   @Override
   public boolean start() {
-    properties = PropertiesUtils.me().loadPropertyFile(config);
+    properties = PropertiesKit.me().loadPropertyFile(config);
     host = properties.getProperty("smtp.host", "");
     if (host == null || host.isEmpty()) {
       throw new RuntimeException("email host has not found!");
