@@ -8,6 +8,7 @@
   <artifactId>jfinal-mailer</artifactId>
   <version>0.1</version>
   <packaging>jar</packaging>
+  <name>jfinal-mailer</name>
   <description>jfinal mailer plugins</description>
   <url>https://github.com/Dreampie/jfinal-mailer</url>
 
