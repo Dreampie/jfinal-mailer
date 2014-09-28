@@ -2,15 +2,16 @@ package cn.dreampie.mail;
 
 import com.jfinal.kit.PathKit;
 import freemarker.cache.FileTemplateLoader;
+import freemarker.cache.MultiTemplateLoader;
+import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.net.URL;
+import java.util.*;
 
 /**
  * Created by wangrenhui on 2014/7/2.
@@ -21,7 +22,7 @@ public class MailerTemplate {
   /**
    * 邮件模板的存放位置
    */
-  private static final String TEMPLATE_PATH = "/template/";
+  private static final String TEMPLATE_PATH = "template/";
   /**
    * 模板引擎配置
    */
@@ -30,12 +31,26 @@ public class MailerTemplate {
    * 参数
    */
   private static Map<Object, Object> parameters;
+  /**
+   * 模板加载位置
+   */
+  private static List<TemplateLoader> loaders = new ArrayList<TemplateLoader>();
 
   static {
     configuration = new Configuration();
 //        ClassTemplateLoader ctl= new ClassTemplateLoader(MailerTemplate.class, TEMPLATE_PATH);
     try {
-      configuration.setTemplateLoader(new FileTemplateLoader(new File(PathKit.getWebRootPath() + TEMPLATE_PATH)));
+      Enumeration<URL> resources = MailerTemplate.class.getClassLoader().getResources(TEMPLATE_PATH);
+      URL resource = null;
+      while (resources.hasMoreElements()) {
+        resource = resources.nextElement();
+        loaders.add(new FileTemplateLoader(new File(resource.getFile())));
+      }
+      File webDir = new File(PathKit.getWebRootPath() + File.separator + TEMPLATE_PATH);
+      if (webDir.exists())
+        loaders.add(new FileTemplateLoader(webDir));
+      TemplateLoader[] templateLoaders = new TemplateLoader[loaders.size()];
+      configuration.setTemplateLoader(new MultiTemplateLoader(loaders.toArray(templateLoaders)));
     } catch (IOException e) {
       e.printStackTrace();
     }

@@ -1,6 +1,7 @@
 package cn.dreampie.mail;
 
 import cn.dreampie.akka.Akka;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.mail.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +67,7 @@ public class Mailer {
               if (attachment!=null)
                 htmlEmail.attach(attachment);
               htmlEmail.send();
+              logger.info("send email to {}", StringUtils.join(recipients));
             } catch (EmailException e) {
               e.printStackTrace();
             }
@@ -104,6 +106,7 @@ public class Mailer {
               simpleEmail.addTo(recipients);
               simpleEmail.setMsg(body);
               simpleEmail.send();
+              logger.info("send email to {}", StringUtils.join(recipients));
             } catch (EmailException e) {
               e.printStackTrace();
             }
@@ -146,6 +149,7 @@ public class Mailer {
               if (attachment!=null)
                 multiPartEmail.attach(attachment);
               multiPartEmail.send();
+              logger.info("send email to {}", StringUtils.join(recipients));
             } catch (EmailException e) {
               e.printStackTrace();
             }
