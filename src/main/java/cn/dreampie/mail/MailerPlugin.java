@@ -14,7 +14,7 @@ public class MailerPlugin implements IPlugin {
 
   private Logger logger = LoggerFactory.getLogger(getClass());
 
-  private String config = "/application.properties";
+  private String config = "application.properties";
   private Properties properties;
 
   private String host;
