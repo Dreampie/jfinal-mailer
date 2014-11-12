@@ -30,7 +30,7 @@ public class MailerPlugin implements IPlugin {
   private String from;
   private String encode;
 
-  static MailerConf mailerConf;
+  public static MailerConf mailerConf;
 
   public MailerPlugin() {
 

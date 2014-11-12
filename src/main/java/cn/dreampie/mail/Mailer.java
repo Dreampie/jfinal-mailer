@@ -5,6 +5,7 @@ import org.apache.commons.mail.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -32,6 +33,58 @@ public class Mailer {
    * @param body       内容
    * @param recipients 收件人
    */
+  public static void sendText(final String subject, final String body, final String... recipients) {
+    getExecutorService().execute(getSendTextRunnable(subject, body, recipients));
+  }
+
+//  public static void sendTextByAkka(final String subject, final String body, final String... recipients) {
+//    Akka.system().scheduler().scheduleOnce(Duration.create(1000, TimeUnit.MILLISECONDS),
+//        getSendTextRunnable(subject, body, recipients), Akka.system().dispatcher());
+//  }
+
+  private static Runnable getSendTextRunnable(final String subject, final String body, final String... recipients) {
+    return new Runnable() {
+      @Override
+      public void run() {
+        try {
+          sendTextEmail(subject, body, recipients);
+        } catch (EmailException e) {
+          e.printStackTrace();
+        }
+      }
+    };
+  }
+
+  public static void sendTextEmail(String subject, String body, String... recipients) throws EmailException {
+    MailerConf mailerConf = MailerPlugin.mailerConf;
+    SimpleEmail simpleEmail = new SimpleEmail();
+    simpleEmail.setCharset(mailerConf.getCharset());
+    simpleEmail.setSocketTimeout(mailerConf.getTimeout());
+    simpleEmail.setCharset(mailerConf.getEncode());
+    simpleEmail.setHostName(mailerConf.getHost());
+    if (!mailerConf.getSslport().isEmpty())
+      simpleEmail.setSslSmtpPort(mailerConf.getSslport());
+    if (!mailerConf.getPort().isEmpty())
+      simpleEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
+    simpleEmail.setSSLOnConnect(mailerConf.isSsl());
+    simpleEmail.setStartTLSEnabled(mailerConf.isTls());
+    simpleEmail.setDebug(mailerConf.isDebug());
+    simpleEmail.setAuthentication(mailerConf.getUser(), mailerConf.getPassword());
+
+    simpleEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
+    simpleEmail.setSubject(subject);
+    simpleEmail.addTo(recipients);
+    simpleEmail.setMsg(body);
+    simpleEmail.send();
+    logger.info("send email to {}", StringUtils.join(recipients));
+  }
+
+
+  /**
+   * @param subject    主题
+   * @param body       内容
+   * @param recipients 收件人
+   */
   public static void sendHtml(final String subject, final String body, final String... recipients) {
     sendHtml(subject, body, null, recipients);
   }
@@ -52,35 +105,12 @@ public class Mailer {
 //        getSendHtmlRunable(subject, body, attachment, recipients), Akka.system().dispatcher());
 //  }
 
-  private static Runnable getSendHtmlRunable(final String subject, final String body, final EmailAttachment attachment, final String[] recipients) {
+  private static Runnable getSendHtmlRunable(final String subject, final String body, final EmailAttachment attachment, final String... recipients) {
     return new Runnable() {
       @Override
       public void run() {
-        MailerConf mailerConf = MailerPlugin.mailerConf;
-        HtmlEmail htmlEmail = new HtmlEmail();
-        htmlEmail.setCharset(mailerConf.getCharset());
-        htmlEmail.setSocketTimeout(mailerConf.getTimeout());
-        htmlEmail.setCharset(mailerConf.getEncode());
-        htmlEmail.setHostName(mailerConf.getHost());
-        if (!mailerConf.getSslport().isEmpty())
-          htmlEmail.setSslSmtpPort(mailerConf.getSslport());
-        if (!mailerConf.getPort().isEmpty())
-          htmlEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
-        htmlEmail.setSSLOnConnect(mailerConf.isSsl());
-        htmlEmail.setStartTLSEnabled(mailerConf.isTls());
-        htmlEmail.setDebug(mailerConf.isDebug());
-        htmlEmail.setAuthenticator(new DefaultAuthenticator(mailerConf.getUser(), mailerConf.getPassword()));
         try {
-          htmlEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
-          htmlEmail.setSubject(subject);
-          htmlEmail.addTo(recipients);
-          htmlEmail.setHtmlMsg(body);
-          // set the alternative message
-          htmlEmail.setTextMsg("Your email client does not support HTML messages");
-          if (attachment != null)
-            htmlEmail.attach(attachment);
-          htmlEmail.send();
-          logger.info("send email to {}", StringUtils.join(recipients));
+          sendHtmlEmail(subject, body, attachment, recipients);
         } catch (EmailException e) {
           e.printStackTrace();
         }
@@ -88,50 +118,32 @@ public class Mailer {
     };
   }
 
-  /**
-   * @param subject    主题
-   * @param body       内容
-   * @param recipients 收件人
-   */
-  public static void sendText(final String subject, final String body, final String... recipients) {
-    getExecutorService().execute(getSendTextRunnable(subject, body, recipients));
-  }
+  public static void sendHtmlEmail(String subject, String body, EmailAttachment attachment, String... recipients) throws EmailException {
+    MailerConf mailerConf = MailerPlugin.mailerConf;
+    HtmlEmail htmlEmail = new HtmlEmail();
+    htmlEmail.setCharset(mailerConf.getCharset());
+    htmlEmail.setSocketTimeout(mailerConf.getTimeout());
+    htmlEmail.setCharset(mailerConf.getEncode());
+    htmlEmail.setHostName(mailerConf.getHost());
+    if (!mailerConf.getSslport().isEmpty())
+      htmlEmail.setSslSmtpPort(mailerConf.getSslport());
+    if (!mailerConf.getPort().isEmpty())
+      htmlEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
+    htmlEmail.setSSLOnConnect(mailerConf.isSsl());
+    htmlEmail.setStartTLSEnabled(mailerConf.isTls());
+    htmlEmail.setDebug(mailerConf.isDebug());
+    htmlEmail.setAuthenticator(new DefaultAuthenticator(mailerConf.getUser(), mailerConf.getPassword()));
 
-//  public static void sendTextByAkka(final String subject, final String body, final String... recipients) {
-//    Akka.system().scheduler().scheduleOnce(Duration.create(1000, TimeUnit.MILLISECONDS),
-//        getSendTextRunnable(subject, body, recipients), Akka.system().dispatcher());
-//  }
-
-  private static Runnable getSendTextRunnable(final String subject, final String body, final String[] recipients) {
-    return new Runnable() {
-      @Override
-      public void run() {
-        MailerConf mailerConf = MailerPlugin.mailerConf;
-        SimpleEmail simpleEmail = new SimpleEmail();
-        simpleEmail.setCharset(mailerConf.getCharset());
-        simpleEmail.setSocketTimeout(mailerConf.getTimeout());
-        simpleEmail.setCharset(mailerConf.getEncode());
-        simpleEmail.setHostName(mailerConf.getHost());
-        if (!mailerConf.getSslport().isEmpty())
-          simpleEmail.setSslSmtpPort(mailerConf.getSslport());
-        if (!mailerConf.getPort().isEmpty())
-          simpleEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
-        simpleEmail.setSSLOnConnect(mailerConf.isSsl());
-        simpleEmail.setStartTLSEnabled(mailerConf.isTls());
-        simpleEmail.setDebug(mailerConf.isDebug());
-        simpleEmail.setAuthentication(mailerConf.getUser(), mailerConf.getPassword());
-        try {
-          simpleEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
-          simpleEmail.setSubject(subject);
-          simpleEmail.addTo(recipients);
-          simpleEmail.setMsg(body);
-          simpleEmail.send();
-          logger.info("send email to {}", StringUtils.join(recipients));
-        } catch (EmailException e) {
-          e.printStackTrace();
-        }
-      }
-    };
+    htmlEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
+    htmlEmail.setSubject(subject);
+    htmlEmail.addTo(recipients);
+    htmlEmail.setHtmlMsg(body);
+    // set the alternative message
+    htmlEmail.setTextMsg("Your email client does not support HTML messages");
+    if (attachment != null)
+      htmlEmail.attach(attachment);
+    htmlEmail.send();
+    logger.info("send email to {}", StringUtils.join(recipients));
   }
 
   /**
@@ -150,38 +162,51 @@ public class Mailer {
 //        getSendAttachRunnable(subject, body, attachment, recipients), Akka.system().dispatcher());
 //  }
 
-  private static Runnable getSendAttachRunnable(final String subject, final String body, final EmailAttachment attachment, final String[] recipients) {
+  private static Runnable getSendAttachRunnable(final String subject, final String body, final EmailAttachment attachment, final String... recipients) {
     return new Runnable() {
       @Override
       public void run() {
-        MailerConf mailerConf = MailerPlugin.mailerConf;
-        MultiPartEmail multiPartEmail = new MultiPartEmail();
-        multiPartEmail.setCharset(mailerConf.getCharset());
-        multiPartEmail.setSocketTimeout(mailerConf.getTimeout());
-        multiPartEmail.setCharset(mailerConf.getEncode());
-        multiPartEmail.setHostName(mailerConf.getHost());
-        if (!mailerConf.getSslport().isEmpty())
-          multiPartEmail.setSslSmtpPort(mailerConf.getSslport());
-        if (!mailerConf.getPort().isEmpty())
-          multiPartEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
-        multiPartEmail.setSSLOnConnect(mailerConf.isSsl());
-        multiPartEmail.setStartTLSEnabled(mailerConf.isTls());
-        multiPartEmail.setDebug(mailerConf.isDebug());
-        multiPartEmail.setAuthentication(mailerConf.getUser(), mailerConf.getPassword());
         try {
-          multiPartEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
-          multiPartEmail.setSubject(subject);
-          multiPartEmail.addTo(recipients);
-          multiPartEmail.setMsg(body);
-          // add the attachment
-          if (attachment != null)
-            multiPartEmail.attach(attachment);
-          multiPartEmail.send();
-          logger.info("send email to {}", StringUtils.join(recipients));
+          sendAttachEmail(subject, body, attachment, recipients);
         } catch (EmailException e) {
           e.printStackTrace();
         }
       }
     };
+  }
+
+  public static void sendAttachEmail(String subject, String body, EmailAttachment attachment, String... recipients) throws EmailException {
+    MailerConf mailerConf = MailerPlugin.mailerConf;
+    MultiPartEmail multiPartEmail = new MultiPartEmail();
+    multiPartEmail.setCharset(mailerConf.getCharset());
+    multiPartEmail.setSocketTimeout(mailerConf.getTimeout());
+    multiPartEmail.setCharset(mailerConf.getEncode());
+    multiPartEmail.setHostName(mailerConf.getHost());
+    if (!mailerConf.getSslport().isEmpty())
+      multiPartEmail.setSslSmtpPort(mailerConf.getSslport());
+    if (!mailerConf.getPort().isEmpty())
+      multiPartEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
+    multiPartEmail.setSSLOnConnect(mailerConf.isSsl());
+    multiPartEmail.setStartTLSEnabled(mailerConf.isTls());
+    multiPartEmail.setDebug(mailerConf.isDebug());
+    multiPartEmail.setAuthentication(mailerConf.getUser(), mailerConf.getPassword());
+
+    multiPartEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
+    multiPartEmail.setSubject(subject);
+    multiPartEmail.addTo(recipients);
+    multiPartEmail.setMsg(body);
+    // add the attachment
+    if (attachment != null)
+      multiPartEmail.attach(attachment);
+    multiPartEmail.send();
+    logger.info("send email to {}", StringUtils.join(recipients));
+  }
+
+  public void shutdown() {
+    getExecutorService().shutdown();
+  }
+
+  public List<Runnable> shutdownNow() {
+    return getExecutorService().shutdownNow();
   }
 }
