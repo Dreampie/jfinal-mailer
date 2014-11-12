@@ -15,16 +15,16 @@ import java.util.concurrent.Executors;
 public class Mailer {
   private static Logger logger = LoggerFactory.getLogger(Mailer.class);
 
-  private static ExecutorService cachedPool = null;
+  private static ExecutorService executorService = null;
 
-  public static ExecutorService getCachedPool() {
-    if (cachedPool == null)
-      cachedPool = Executors.newCachedThreadPool();
-    return cachedPool;
+  public static ExecutorService getExecutorService() {
+    if (executorService == null)
+      executorService = Executors.newCachedThreadPool();
+    return executorService;
   }
 
-  public static void setCachedPool(ExecutorService cachedPool) {
-    Mailer.cachedPool = cachedPool;
+  public static void setExecutorService(ExecutorService executorService) {
+    Mailer.executorService = executorService;
   }
 
   /**
@@ -43,7 +43,7 @@ public class Mailer {
    * @param recipients 收件人
    */
   public static void sendHtml(final String subject, final String body, final EmailAttachment attachment, final String... recipients) {
-    getCachedPool().execute(getSendHtmlRunable(subject, body, attachment, recipients));
+    getExecutorService().execute(getSendHtmlRunable(subject, body, attachment, recipients));
   }
 
 //  public static void sendHtmlByAkka(final String subject, final String body, final EmailAttachment attachment, final String... recipients) {
@@ -94,7 +94,7 @@ public class Mailer {
    * @param recipients 收件人
    */
   public static void sendText(final String subject, final String body, final String... recipients) {
-    getCachedPool().execute(getSendTextRunnable(subject, body, recipients));
+    getExecutorService().execute(getSendTextRunnable(subject, body, recipients));
   }
 
 //  public static void sendTextByAkka(final String subject, final String body, final String... recipients) {
@@ -141,7 +141,7 @@ public class Mailer {
    * @param recipients 收件人
    */
   public static void sendAttachment(final String subject, final String body, final EmailAttachment attachment, final String... recipients) {
-    getCachedPool().execute(getSendAttachRunnable(subject, body, attachment, recipients));
+    getExecutorService().execute(getSendAttachRunnable(subject, body, attachment, recipients));
   }
 
 //  public static void sendAttachmentByAkka(final String subject, final String body, final EmailAttachment attachment, final String... recipients) {
