@@ -18,25 +18,8 @@ public class Mailer {
    * @param recipients 收件人
    */
   public static void sendText(String subject, String body, String... recipients) throws EmailException {
-    MailerConf mailerConf = MailerPlugin.mailerConf;
     SimpleEmail simpleEmail = new SimpleEmail();
-    simpleEmail.setCharset(mailerConf.getCharset());
-    simpleEmail.setSocketTimeout(mailerConf.getTimeout());
-    simpleEmail.setSocketConnectionTimeout(mailerConf.getConnectout());
-    simpleEmail.setCharset(mailerConf.getEncode());
-    simpleEmail.setHostName(mailerConf.getHost());
-    if (!mailerConf.getSslport().isEmpty())
-      simpleEmail.setSslSmtpPort(mailerConf.getSslport());
-    if (!mailerConf.getPort().isEmpty())
-      simpleEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
-    simpleEmail.setSSLOnConnect(mailerConf.isSsl());
-    simpleEmail.setStartTLSEnabled(mailerConf.isTls());
-    simpleEmail.setDebug(mailerConf.isDebug());
-    simpleEmail.setAuthentication(mailerConf.getUser(), mailerConf.getPassword());
-
-    simpleEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
-    simpleEmail.setSubject(subject);
-    simpleEmail.addTo(recipients);
+    configEmail(subject, simpleEmail, recipients);
     simpleEmail.setMsg(body);
     simpleEmail.send();
     logger.info("send email to {}", StringUtils.join(recipients));
@@ -59,25 +42,8 @@ public class Mailer {
    * @param recipients 收件人
    */
   public static void sendHtml(String subject, String body, EmailAttachment attachment, String... recipients) throws EmailException {
-    MailerConf mailerConf = MailerPlugin.mailerConf;
     HtmlEmail htmlEmail = new HtmlEmail();
-    htmlEmail.setCharset(mailerConf.getCharset());
-    htmlEmail.setSocketTimeout(mailerConf.getTimeout());
-    htmlEmail.setSocketConnectionTimeout(mailerConf.getConnectout());
-    htmlEmail.setCharset(mailerConf.getEncode());
-    htmlEmail.setHostName(mailerConf.getHost());
-    if (!mailerConf.getSslport().isEmpty())
-      htmlEmail.setSslSmtpPort(mailerConf.getSslport());
-    if (!mailerConf.getPort().isEmpty())
-      htmlEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
-    htmlEmail.setSSLOnConnect(mailerConf.isSsl());
-    htmlEmail.setStartTLSEnabled(mailerConf.isTls());
-    htmlEmail.setDebug(mailerConf.isDebug());
-    htmlEmail.setAuthenticator(new DefaultAuthenticator(mailerConf.getUser(), mailerConf.getPassword()));
-
-    htmlEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
-    htmlEmail.setSubject(subject);
-    htmlEmail.addTo(recipients);
+    configEmail(subject, htmlEmail, recipients);
     htmlEmail.setHtmlMsg(body);
     // set the alternative message
     htmlEmail.setTextMsg("Your email client does not support HTML messages");
@@ -94,31 +60,35 @@ public class Mailer {
    * @param recipients 收件人
    */
   public static void sendAttachment(String subject, String body, EmailAttachment attachment, String... recipients) throws EmailException {
-    MailerConf mailerConf = MailerPlugin.mailerConf;
-    MultiPartEmail multiPartEmail = new MultiPartEmail();
-    multiPartEmail.setCharset(mailerConf.getCharset());
-    multiPartEmail.setSocketTimeout(mailerConf.getTimeout());
-    multiPartEmail.setSocketConnectionTimeout(mailerConf.getConnectout());
-    multiPartEmail.setCharset(mailerConf.getEncode());
-    multiPartEmail.setHostName(mailerConf.getHost());
-    if (!mailerConf.getSslport().isEmpty())
-      multiPartEmail.setSslSmtpPort(mailerConf.getSslport());
-    if (!mailerConf.getPort().isEmpty())
-      multiPartEmail.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
-    multiPartEmail.setSSLOnConnect(mailerConf.isSsl());
-    multiPartEmail.setStartTLSEnabled(mailerConf.isTls());
-    multiPartEmail.setDebug(mailerConf.isDebug());
-    multiPartEmail.setAuthentication(mailerConf.getUser(), mailerConf.getPassword());
 
-    multiPartEmail.setFrom(mailerConf.getFrom(), mailerConf.getName());
-    multiPartEmail.setSubject(subject);
-    multiPartEmail.addTo(recipients);
+    MultiPartEmail multiPartEmail = new MultiPartEmail();
+    configEmail(subject, multiPartEmail, recipients);
     multiPartEmail.setMsg(body);
     // add the attachment
     if (attachment != null)
       multiPartEmail.attach(attachment);
     multiPartEmail.send();
     logger.info("send email to {}", StringUtils.join(recipients));
+  }
+
+  public static void configEmail(String subject, Email email, String... recipients) throws EmailException {
+    MailerConf mailerConf = MailerPlugin.mailerConf;
+    email.setCharset(mailerConf.getCharset());
+    email.setSocketTimeout(mailerConf.getTimeout());
+    email.setSocketConnectionTimeout(mailerConf.getConnectout());
+    email.setCharset(mailerConf.getEncode());
+    email.setHostName(mailerConf.getHost());
+    if (!mailerConf.getSslport().isEmpty())
+      email.setSslSmtpPort(mailerConf.getSslport());
+    if (!mailerConf.getPort().isEmpty())
+      email.setSmtpPort(Integer.parseInt(mailerConf.getPort()));
+    email.setSSLOnConnect(mailerConf.isSsl());
+    email.setStartTLSEnabled(mailerConf.isTls());
+    email.setDebug(mailerConf.isDebug());
+    email.setAuthentication(mailerConf.getUser(), mailerConf.getPassword());
+    email.setFrom(mailerConf.getFrom(), mailerConf.getName());
+    email.setSubject(subject);
+    email.addTo(recipients);
   }
 
 }
