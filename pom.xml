@@ -82,6 +82,7 @@
       <groupId>cn.dreampie</groupId>
       <artifactId>jfinal-akka</artifactId>
       <version>${jfinal-akka.version}</version>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
