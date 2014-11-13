@@ -8,6 +8,7 @@ public class MailerConf {
   private String host;
   private String sslport;
   private int timeout;
+  private int connectout;
   private String port;
   private boolean ssl;
   private boolean tls;
@@ -18,11 +19,12 @@ public class MailerConf {
   private String from;
   private String encode;
 
-  public MailerConf(String host, String sslport, int timeout, String port, boolean ssl, boolean tls, boolean debug, String user, String password, String name, String from, String encode) {
+  public MailerConf(String host, String sslport, int timeout, int connectout, String port, boolean ssl, boolean tls, boolean debug, String user, String password, String name, String from, String encode) {
     this.charset = "UTF-8";
     this.host = host;
     this.sslport = sslport;
     this.timeout = timeout;
+    this.connectout = connectout;
     this.port = port;
     this.ssl = ssl;
     this.tls = tls;
@@ -48,6 +50,14 @@ public class MailerConf {
 
   public void setTimeout(int timeout) {
     this.timeout = timeout;
+  }
+
+  public int getConnectout() {
+    return connectout;
+  }
+
+  public void setConnectout(int connectout) {
+    this.connectout = connectout;
   }
 
   public String getHost() {

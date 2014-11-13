@@ -20,6 +20,7 @@ public class MailerPlugin implements IPlugin {
   private String host;
   private String sslport;
   private String timeout;
+  private String connectout;
   private String port;
   private String ssl;
   private String tls;
@@ -57,6 +58,7 @@ public class MailerPlugin implements IPlugin {
 //      }
 //    }
     timeout = properties.getProperty("smtp.timeout", "60000");
+    connectout = properties.getProperty("smtp.connectout", "60000");
     tls = properties.getProperty("smtp.tls", "false");
     debug = properties.getProperty("smtp.debug", "false");
     user = properties.getProperty("smtp.user", "");
@@ -77,7 +79,7 @@ public class MailerPlugin implements IPlugin {
     }
 
     encode = properties.getProperty("smtp.encode", "UTF-8");
-    mailerConf = new MailerConf(host, sslport, Integer.parseInt(timeout), port, Boolean.parseBoolean(ssl), Boolean.parseBoolean(tls), Boolean.parseBoolean(debug), user, password, name, from, encode);
+    mailerConf = new MailerConf(host, sslport, Integer.parseInt(timeout), Integer.parseInt(connectout), port, Boolean.parseBoolean(ssl), Boolean.parseBoolean(tls), Boolean.parseBoolean(debug), user, password, name, from, encode);
 
     return true;
   }
