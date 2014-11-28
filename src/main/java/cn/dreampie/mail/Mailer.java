@@ -30,10 +30,15 @@ public class Mailer {
     }
   }
 
+  public static SimpleEmail getSimpleEmail(String subject, String... recipients) throws EmailException {
+    return getSimpleEmail(subject, null, recipients);
+  }
+
   public static SimpleEmail getSimpleEmail(String subject, String body, String... recipients) throws EmailException {
     SimpleEmail simpleEmail = new SimpleEmail();
     configEmail(subject, simpleEmail, recipients);
-    simpleEmail.setMsg(body);
+    if (body != null)
+      simpleEmail.setMsg(body);
     return simpleEmail;
   }
 
@@ -63,15 +68,16 @@ public class Mailer {
     }
   }
 
-  public static HtmlEmail getHtmlEmail(String subject, String body, String... recipients) {
-    return getHtmlEmail(subject, body, null, recipients);
+  public static HtmlEmail getHtmlEmail(String subject, String... recipients) {
+    return getHtmlEmail(subject, null, null, recipients);
   }
 
   public static HtmlEmail getHtmlEmail(String subject, String body, EmailAttachment attachment, String... recipients) {
     try {
       HtmlEmail htmlEmail = new HtmlEmail();
       configEmail(subject, htmlEmail, recipients);
-      htmlEmail.setHtmlMsg(body);
+      if (body != null)
+        htmlEmail.setHtmlMsg(body);
       // set the alter native message
       htmlEmail.setTextMsg("Your email client does not support HTML messages");
       if (attachment != null)
@@ -98,15 +104,16 @@ public class Mailer {
     }
   }
 
-  public static MultiPartEmail getMultiPartEmail(String subject, String body, String... recipients) {
-    return getMultiPartEmail(subject, body, null, recipients);
+  public static MultiPartEmail getMultiPartEmail(String subject, String... recipients) {
+    return getMultiPartEmail(subject, null, null, recipients);
   }
 
   public static MultiPartEmail getMultiPartEmail(String subject, String body, EmailAttachment attachment, String... recipients) {
     try {
       MultiPartEmail multiPartEmail = new MultiPartEmail();
       configEmail(subject, multiPartEmail, recipients);
-      multiPartEmail.setMsg(body);
+      if (body != null)
+        multiPartEmail.setMsg(body);
       // add the attachment
       if (attachment != null)
         multiPartEmail.attach(attachment);
