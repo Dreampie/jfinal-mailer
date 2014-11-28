@@ -30,10 +30,19 @@ public class Mailer {
     }
   }
 
+  /**
+   * @param subject    主题
+   * @param recipients 收件人
+   */
   public static SimpleEmail getSimpleEmail(String subject, String... recipients) throws EmailException {
     return getSimpleEmail(subject, null, recipients);
   }
 
+  /**
+   * @param subject    主题
+   * @param body       内容
+   * @param recipients 收件人
+   */
   public static SimpleEmail getSimpleEmail(String subject, String body, String... recipients) throws EmailException {
     SimpleEmail simpleEmail = new SimpleEmail();
     configEmail(subject, simpleEmail, recipients);
@@ -68,10 +77,20 @@ public class Mailer {
     }
   }
 
+  /**
+   * @param subject    主题
+   * @param recipients 收件人
+   */
   public static HtmlEmail getHtmlEmail(String subject, String... recipients) {
     return getHtmlEmail(subject, null, null, recipients);
   }
 
+  /**
+   * @param subject    主题
+   * @param body       内容
+   * @param attachment 附件
+   * @param recipients 收件人
+   */
   public static HtmlEmail getHtmlEmail(String subject, String body, EmailAttachment attachment, String... recipients) {
     try {
       HtmlEmail htmlEmail = new HtmlEmail();
@@ -104,10 +123,20 @@ public class Mailer {
     }
   }
 
+  /**
+   * @param subject    主题
+   * @param recipients 收件人
+   */
   public static MultiPartEmail getMultiPartEmail(String subject, String... recipients) {
     return getMultiPartEmail(subject, null, null, recipients);
   }
 
+  /**
+   * @param subject    主题
+   * @param body       内容
+   * @param attachment 附件
+   * @param recipients 收件人
+   */
   public static MultiPartEmail getMultiPartEmail(String subject, String body, EmailAttachment attachment, String... recipients) {
     try {
       MultiPartEmail multiPartEmail = new MultiPartEmail();
@@ -123,7 +152,7 @@ public class Mailer {
     }
   }
 
-  public static void configEmail(String subject, Email email, String... recipients) throws EmailException {
+  private static void configEmail(String subject, Email email, String... recipients) throws EmailException {
 
     if (recipients == null)
       throw new EmailException("Recipients not found.");
