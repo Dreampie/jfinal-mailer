@@ -63,6 +63,10 @@ public class Mailer {
     }
   }
 
+  public static HtmlEmail getHtmlEmail(String subject, String body, String... recipients) {
+    return getHtmlEmail(subject, body, null, recipients);
+  }
+
   public static HtmlEmail getHtmlEmail(String subject, String body, EmailAttachment attachment, String... recipients) {
     try {
       HtmlEmail htmlEmail = new HtmlEmail();
@@ -92,6 +96,10 @@ public class Mailer {
     } catch (EmailException e) {
       throw new RuntimeException("Unabled to send email", e);
     }
+  }
+
+  public static MultiPartEmail getMultiPartEmail(String subject, String body, String... recipients) {
+    return getMultiPartEmail(subject, body, null, recipients);
   }
 
   public static MultiPartEmail getMultiPartEmail(String subject, String body, EmailAttachment attachment, String... recipients) {
