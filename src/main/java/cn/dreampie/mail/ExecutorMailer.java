@@ -42,11 +42,7 @@ public class ExecutorMailer {
     return new Runnable() {
       @Override
       public void run() {
-        try {
-          Mailer.sendText(subject, body, recipients);
-        } catch (EmailException e) {
-          e.printStackTrace();
-        }
+        Mailer.sendText(subject, body, recipients);
       }
     };
   }
@@ -75,11 +71,7 @@ public class ExecutorMailer {
     return new Runnable() {
       @Override
       public void run() {
-        try {
-          Mailer.sendHtml(subject, body, attachment, recipients);
-        } catch (EmailException e) {
-          e.printStackTrace();
-        }
+        Mailer.sendHtml(subject, body, attachment, recipients);
       }
     };
   }
@@ -98,11 +90,7 @@ public class ExecutorMailer {
     return new Runnable() {
       @Override
       public void run() {
-        try {
-          Mailer.sendAttachment(subject, body, attachment, recipients);
-        } catch (EmailException e) {
-          e.printStackTrace();
-        }
+        Mailer.sendAttachment(subject, body, attachment, recipients);
       }
     };
   }
