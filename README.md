@@ -38,8 +38,12 @@ smtp.from=wangrenhui1990@163.com
 
 ```java
 
-MailerPlugin mailerPlugin = new MailerPlugin();
-mailerPlugin.start();
+//emailer插件
+plugins.add(new MailerPlugin());
+
+//独立启动
+//MailerPlugin mailerPlugin = new MailerPlugin();
+//mailerPlugin.start();
 
 //发送带图片的邮件
 HtmlEmail htmlEmail = Mailer.getHtmlEmail("测试", "173956022@qq.com");
